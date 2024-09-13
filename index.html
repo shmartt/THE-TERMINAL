@@ -1,0 +1,115 @@
+<body style="margin:0px; background-color: black;overflow: hidden;text-align:center;cursor:none">
+    <canvas id="canvas" style="height: 100vh;"></canvas>
+
+    <script>
+        var canvas = document.getElementById("canvas"),
+            context = canvas.getContext("2d", { alpha: false, willReadFrequently: true }),
+            width = 480,
+            height = 480,
+            halfWidth = 240,
+            halfHeight = 240;
+        canvas.width = 480;
+        canvas.height = 480;
+    </script>
+    <script src="sources/alis.js"></script>
+    <script src="sources/renderer.js"></script>
+    <script src="sources/geometry.js"></script>
+    <script src="sources/crtEffect.js"></script>
+    <script src="sources/terminalText.js"></script>
+    <script src="sources/notificationWindow.js"></script>
+    <script src="sources/tween.js"></script>
+    <script src="sources/particles.js"></script>
+    <script src="sources/zzfx.min.js"></script>
+
+
+
+
+    <script src="sources/scenes/sceneManager.js"></script>
+    <script src="sources/scenes/passwordScene.js"></script>
+    <script src="sources/scenes/logoScene.js"></script>
+    <script src="sources/scenes/introScene.js"></script>
+    <script src="sources/scenes/trainingScene.js"></script>
+    <script src="sources/scenes/missionBriefingScene.js"></script>
+    <script src="sources/scenes/moonScene.js"></script>
+    <script src="sources/scenes/spaceScene.js"></script>
+
+
+
+
+
+    <script>
+
+        var
+            deltaTime,
+            previousTime = performance.now(),
+
+            mouseX = 0,
+            mouseY = 0,
+            mouseIsDown = false,
+            gameIsOver = false,
+            elapsedTime = 0;
+
+        // keyboard handler
+        var leftKeyPressed = rightKeyPressed = upKeyPressed = downKeyPressed = spaceKeyPressed = escKeyPressed = enterKeyPressed = false;
+        updateKeys = (code, value) => {
+            switch (code) {
+                case 65: case 37: leftKeyPressed = value; break;
+                case 87: case 38: upKeyPressed = value; break;
+                case 68: case 39: rightKeyPressed = value; break;
+                case 83: case 40: downKeyPressed = value; break;
+                case 32: spaceKeyPressed = value; break;
+                case 27: escKeyPressed = value; break;
+                case 13: enterKeyPressed = value; break;
+                default: break;
+            }
+        };
+
+        onkeydown = e => updateKeys(e.keyCode, true);
+        onkeyup = e => updateKeys(e.keyCode, false);
+
+        // mouse handlers
+        onmousedown = e => { if (e.button === 0) mouseIsDown = true; };
+        onmouseup = e => { if (e.button === 0) mouseIsDown = false; };
+        onmousemove = e => {
+            const canvasRectangle = canvas.getBoundingClientRect();
+            mouseX = (e.clientX - canvasRectangle.left) * (width / canvasRectangle.width);
+            mouseY = (e.clientY - canvasRectangle.top) * (height / canvasRectangle.height);
+        };
+
+        drawMouse = () => {
+            lineWidth(2);
+            strokeStyle(white);
+            beginPath()
+            moveTo(mouseX - 10, mouseY);
+            lineTo(mouseX + 10, mouseY);
+            moveTo(mouseX, mouseY - 10);
+            lineTo(mouseX, mouseY + 10);
+            stroke()
+        }
+
+        // Game loop
+
+
+        initiliseCRTEffect();
+        showScene(logoScene());
+
+        gameLoop = (timeStamp) => {
+            deltaTime = Math.max((timeStamp - previousTime) * .001, 0); // Ensure deltaTime is not negative
+            previousTime = timeStamp;
+            elapsedTime += deltaTime;
+
+            clearRect(0, 0, width, height);
+            currentScene.update();
+            render();
+            updateTerminalText();
+            updateParticles();
+            updateTweens();
+            drawMouse();
+            updateCRTEffect();
+            requestAnimationFrame(gameLoop);
+        };
+        requestAnimationFrame(gameLoop);
+
+
+    </script>
+</body>
